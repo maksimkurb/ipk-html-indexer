@@ -2,6 +2,8 @@
 
 # # Copyright (C) 2011-2020 Entware
 
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
 
 # abort on error
 set -e
@@ -33,7 +35,6 @@ function parse_args
     case "$1" in
       -a | --archive )	create_archive='yes';	shift;;
       -h | --html )	create_html='yes';	shift;;
-      -t | --telegram )	send_msg='yes';		shift;;
       -f | --force )	force='yes';		shift;;
       * ) args+=("$1");				shift;;
     esac
@@ -70,19 +71,6 @@ function create_archive
   fi
 }
 
-function send_msg
-{
-  feed_name="$(basename ${feed_path})"
-  if [ "$send_msg" = "yes" ] && [ -f ${feed_path}/Packages.prev ] && [ "$feed_name" != "keenetic" ]; then
-    msg="$(/usr/local/bin/opkg-utils/compare-indexes-tg.py ${feed_path}/Packages.prev ${feed_path}/Packages)"
-    if [ `expr length "$msg"` -le 1000 ] && [ ! -z "$msg" ]; then
-      msg="$feed_name feed changes:\n $msg"
-#      msg+="See <a href=\"https://bin.entware.net/$feed_name/Packages.html\">package list</a> for details."
-#      tg_say_entware.sh "$(echo -e $msg)"
-    fi
-  fi
-}
-
 function run
 {
   parse_args "$@"
@@ -100,7 +88,7 @@ function run
 
     # Create Packages.manifest, Packages, Packages.gz
     [ -f ${feed_path}/Packages ] && cp ${feed_path}/Packages ${feed_path}/Packages.prev
-    /usr/local/bin/mkindex.py $feed_path
+    $SCRIPT_DIR/mkindex.py $feed_path
 #    /usr/local/bin/mkindex.sh $feed_path
 
     # Fix file permissions if possible
@@ -110,10 +98,8 @@ function run
     create_archive
 
     # Create Packages.html if needed
-    [ "$create_html" = "yes" ] && /usr/local/bin/mkhtml.py $feed_path
+    [ "$create_html" = "yes" ] && $SCRIPT_DIR/mkhtml.py $feed_path
 
-    # Send telegram message if needed
-    send_msg
 
     rm -f ${feed_path}/Packages.prev
   fi
