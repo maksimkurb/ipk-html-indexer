@@ -11,7 +11,7 @@ out = """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
 <title>Packages list</title>
-<link rel="stylesheet" type="text/css" href="/css/packages.css">
+<link rel="stylesheet" type="text/css" href="./css/packages.css">
 </head>
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
 <body>
